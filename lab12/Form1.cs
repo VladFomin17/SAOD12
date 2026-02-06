@@ -2,11 +2,13 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.TaskbarClock;
 
 namespace lab12
 {
@@ -27,6 +29,7 @@ namespace lab12
 
             dataGridView1.Rows[0].Cells[0].Value = true;
             dataGridView1.Rows[1].Cells[0].Value = true;
+            dataGridView1.Rows[2].Cells[0].Value = true;
         }
 
         bool IsSorted(int[] a)
@@ -37,40 +40,39 @@ namespace lab12
             return true;
         }
 
-        void BubbleSort(int[] a, out int comparisons, out int swaps)
+        void BubbleSort(int[] a, out int comparisons, out int swaps, out int time)
         {
+            int n = a.Length;
             comparisons = 0;
             swaps = 0;
-            bool swapped;
-
-            for (int i = 0; i < a.Length - 1; i++)
+            bool sorted = false;
+            int t1 = Environment.TickCount;
+            while (!sorted)
             {
-                swapped = false;
-
-                for (int j = 0; j < a.Length - i - 1; j++)
+                sorted = true;
+                for (int i = 0; i < n - 1; i++)
                 {
                     comparisons++;
-
-                    if (a[j] > a[j + 1])
+                    if (a[i] > a[i + 1])
                     {
-                        int t = a[j];
-                        a[j] = a[j + 1];
-                        a[j + 1] = t;
+                        sorted = false;
+                        int temp = a[i];
+                        a[i] = a[i + 1];
+                        a[i + 1] = temp;
                         swaps++;
-                        swapped = true;
                     }
                 }
-
-                if (!swapped)
-                    break;
+                n--;
             }
+            time = Environment.TickCount - t1;
         }
 
-        void SelectionSort(int[] a, out int comparisons, out int swaps)
+        void SelectionSort(int[] a, out int comparisons, out int swaps, out int time)
         {
             comparisons = 0;
             swaps = 0;
 
+            int t1 = Environment.TickCount;
             for (int i = a.Length - 1; i > 0; i--)
             {
                 int maxIndex = 0;
@@ -82,14 +84,47 @@ namespace lab12
                         maxIndex = j;
                 }
 
-                if (maxIndex != i)
-                {
-                    int t = a[i];
-                    a[i] = a[maxIndex];
-                    a[maxIndex] = t;
-                    swaps++;
-                }
+                int t = a[i];
+                a[i] = a[maxIndex];
+                a[maxIndex] = t;
+                swaps++;
             }
+            time = Environment.TickCount - t1;
+        }
+
+        private void InsertionSortWithBarrier(int[] array, out int comparisons, out int swaps, out int time)
+        {
+            int n = array.Length;
+            comparisons = 0;
+            swaps = 0;
+
+            int t1 = Environment.TickCount;
+
+            int minIndex = 0;
+            for (int j = 1; j < n; j++)
+            {
+                if (array[j] < array[minIndex])
+                    minIndex = j;
+            }
+
+            (array[0], array[minIndex]) = (array[minIndex], array[0]);
+            swaps++;
+
+            for (int i = 2; i < n; i++)
+            {
+                int key = array[i];
+                int j;
+                for (j = i - 1; array[j] > key; j--)
+                {
+                    array[j + 1] = array[j];
+                    swaps++;
+                    comparisons++;
+                }
+                array[j + 1] = key;
+                swaps++;
+            }
+
+            time = Environment.TickCount - t1;
         }
 
         private void button2_Click(object sender, EventArgs e)
@@ -111,11 +146,9 @@ namespace lab12
             if ((bool)dataGridView1.Rows[0].Cells[0].Value)
             {
                 int[] sortingArray = (int[])source.Clone();
-                int t1 = Environment.TickCount;
+                int time = 0;
 
-                BubbleSort(sortingArray, out comparisons, out swaps);
-
-                int time = Environment.TickCount - t1;
+                BubbleSort(sortingArray, out comparisons, out swaps, out time);
 
                 dataGridView1.Rows[0].Cells[2].Value = comparisons;
                 dataGridView1.Rows[0].Cells[3].Value = swaps;
@@ -126,16 +159,28 @@ namespace lab12
             if ((bool)dataGridView1.Rows[1].Cells[0].Value)
             {
                 int[] sortingArray = (int[])source.Clone();
-                int t1 = Environment.TickCount;
+                int time = 0;
 
-                SelectionSort(sortingArray, out comparisons, out swaps);
-
-                int time = Environment.TickCount - t1;
+                SelectionSort(sortingArray, out comparisons, out swaps, out time);
 
                 dataGridView1.Rows[1].Cells[2].Value = comparisons;
                 dataGridView1.Rows[1].Cells[3].Value = swaps;
                 dataGridView1.Rows[1].Cells[4].Value = time;
                 dataGridView1.Rows[1].Cells[5].Value = IsSorted(sortingArray) ? "Да" : "Нет";
+            }
+
+
+            if ((bool)dataGridView1.Rows[2].Cells[0].Value)
+            {
+                int[] sortingArray = (int[])source.Clone();
+                int time = 0;
+
+                InsertionSortWithBarrier(sortingArray, out comparisons, out swaps, out time);
+
+                dataGridView1.Rows[2].Cells[2].Value = comparisons;
+                dataGridView1.Rows[2].Cells[3].Value = swaps;
+                dataGridView1.Rows[2].Cells[4].Value = time;
+                dataGridView1.Rows[2].Cells[5].Value = IsSorted(sortingArray) ? "Да" : "Нет";
             }
         }
     }
