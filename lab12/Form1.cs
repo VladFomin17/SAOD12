@@ -27,9 +27,8 @@ namespace lab12
             dataGridView1.Rows[5].Cells[1].Value = "Линейная";
             dataGridView1.Rows[6].Cells[1].Value = "Встроенная";
 
-            dataGridView1.Rows[0].Cells[0].Value = true;
-            dataGridView1.Rows[1].Cells[0].Value = true;
-            dataGridView1.Rows[2].Cells[0].Value = true;
+            dataGridView1.Rows[3].Cells[0].Value = true;
+            dataGridView1.Rows[4].Cells[0].Value = true;
         }
 
         bool IsSorted(int[] a)
@@ -105,6 +104,8 @@ namespace lab12
             {
                 if (array[j] < array[minIndex])
                     minIndex = j;
+
+                comparisons++;
             }
 
             (array[0], array[minIndex]) = (array[minIndex], array[0]);
@@ -127,6 +128,81 @@ namespace lab12
             time = Environment.TickCount - t1;
         }
 
+        private void QuickSort(int[] arr, int left, int right, ref int comparisons, ref int swaps)
+        {
+            if (left >= right) return;
+
+            int x = arr[left];
+
+            int i = left + 1;
+            int j = right; 
+
+            while (i <= j)
+            {
+                while (i <= j && arr[i] < x)
+                {
+                    comparisons++;
+                    i++;
+                }
+
+                while (j >= i && arr[j] > x)
+                {
+                    comparisons++;
+                    j--;
+                }
+
+                if (i <= j)
+                {
+                    (arr[i], arr[j]) = (arr[j], arr[i]);
+                    swaps++;
+                    comparisons++;
+                    i++;
+                    j--;
+                }
+            }
+
+            (arr[left], arr[j]) = (arr[j], arr[left]);
+            swaps++;
+
+            QuickSort(arr, left, j - 1, ref comparisons, ref swaps);
+            QuickSort(arr, j + 1, right, ref comparisons, ref swaps);
+        }
+
+        private void ShellSort(int[] array, out int comparisons, out int swaps, out int time)
+        {
+            int n = array.Length;
+            comparisons = 0;
+            swaps = 0;
+
+            int t1 = Environment.TickCount;
+
+            int h = (int)Math.Pow(2, (int)Math.Log(n, 2) - 1) - 1;
+
+            while (h > 0)
+            {
+                for (int i = h; i < n; i++)
+                {
+                    int temp = array[i];
+                    int j = i;
+
+                    while (j >= h && array[j - h] > temp)
+                    {
+                        array[j] = array[j - h];
+                        j -= h;
+                        swaps++;
+                        comparisons++;
+                    }
+
+                    array[j] = temp;
+                    swaps++;
+                }
+
+                h /= 2;
+            }
+
+            time = Environment.TickCount - t1;
+        }
+
         private void button2_Click(object sender, EventArgs e)
         {
             Close();
@@ -143,7 +219,7 @@ namespace lab12
 
             int comparisons, swaps;
 
-            if ((bool)dataGridView1.Rows[0].Cells[0].Value)
+            if (Convert.ToBoolean(dataGridView1.Rows[0].Cells[0].Value))
             {
                 int[] sortingArray = (int[])source.Clone();
                 int time = 0;
@@ -154,9 +230,16 @@ namespace lab12
                 dataGridView1.Rows[0].Cells[3].Value = swaps;
                 dataGridView1.Rows[0].Cells[4].Value = time;
                 dataGridView1.Rows[0].Cells[5].Value = IsSorted(sortingArray) ? "Да" : "Нет";
+            } 
+            else
+            {
+                dataGridView1.Rows[0].Cells[2].Value = "";
+                dataGridView1.Rows[0].Cells[3].Value = "";
+                dataGridView1.Rows[0].Cells[4].Value = "";
+                dataGridView1.Rows[0].Cells[5].Value = "";
             }
 
-            if ((bool)dataGridView1.Rows[1].Cells[0].Value)
+            if (Convert.ToBoolean(dataGridView1.Rows[1].Cells[0].Value))
             {
                 int[] sortingArray = (int[])source.Clone();
                 int time = 0;
@@ -168,9 +251,16 @@ namespace lab12
                 dataGridView1.Rows[1].Cells[4].Value = time;
                 dataGridView1.Rows[1].Cells[5].Value = IsSorted(sortingArray) ? "Да" : "Нет";
             }
+            else
+            {
+                dataGridView1.Rows[1].Cells[2].Value = "";
+                dataGridView1.Rows[1].Cells[3].Value = "";
+                dataGridView1.Rows[1].Cells[4].Value = "";
+                dataGridView1.Rows[1].Cells[5].Value = "";
+            }
 
 
-            if ((bool)dataGridView1.Rows[2].Cells[0].Value)
+            if (Convert.ToBoolean(dataGridView1.Rows[2].Cells[0].Value))
             {
                 int[] sortingArray = (int[])source.Clone();
                 int time = 0;
@@ -181,6 +271,56 @@ namespace lab12
                 dataGridView1.Rows[2].Cells[3].Value = swaps;
                 dataGridView1.Rows[2].Cells[4].Value = time;
                 dataGridView1.Rows[2].Cells[5].Value = IsSorted(sortingArray) ? "Да" : "Нет";
+            }
+            else
+            {
+                dataGridView1.Rows[2].Cells[2].Value = "";
+                dataGridView1.Rows[2].Cells[3].Value = "";
+                dataGridView1.Rows[2].Cells[4].Value = "";
+                dataGridView1.Rows[2].Cells[5].Value = "";
+            }
+
+            if (Convert.ToBoolean(dataGridView1.Rows[3].Cells[0].Value))
+            {
+                int[] sortingArray = (int[])source.Clone();
+                int time = 0;
+
+                ShellSort(sortingArray, out comparisons, out swaps, out time);
+
+                dataGridView1.Rows[3].Cells[2].Value = comparisons;
+                dataGridView1.Rows[3].Cells[3].Value = swaps;
+                dataGridView1.Rows[3].Cells[4].Value = time;
+                dataGridView1.Rows[3].Cells[5].Value = IsSorted(sortingArray) ? "Да" : "Нет";
+            }
+            else
+            {
+                dataGridView1.Rows[3].Cells[2].Value = "";
+                dataGridView1.Rows[3].Cells[3].Value = "";
+                dataGridView1.Rows[3].Cells[4].Value = "";
+                dataGridView1.Rows[3].Cells[5].Value = "";
+            }
+
+            if (Convert.ToBoolean(dataGridView1.Rows[4].Cells[0].Value))
+            {
+                int[] sortingArray = (int[])source.Clone();
+                comparisons = 0;
+                swaps = 0;
+
+                int t1 = Environment.TickCount;
+                QuickSort(sortingArray, 0, n - 1, ref comparisons, ref swaps);
+                int time = Environment.TickCount - t1;
+
+                dataGridView1.Rows[4].Cells[2].Value = comparisons;
+                dataGridView1.Rows[4].Cells[3].Value = swaps;
+                dataGridView1.Rows[4].Cells[4].Value = time;
+                dataGridView1.Rows[4].Cells[5].Value = IsSorted(sortingArray) ? "Да" : "Нет";
+            }
+            else
+            {
+                dataGridView1.Rows[4].Cells[2].Value = "";
+                dataGridView1.Rows[4].Cells[3].Value = "";
+                dataGridView1.Rows[4].Cells[4].Value = "";
+                dataGridView1.Rows[4].Cells[5].Value = "";
             }
         }
     }
