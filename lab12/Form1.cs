@@ -29,6 +29,8 @@ namespace lab12
 
             dataGridView1.Rows[3].Cells[0].Value = true;
             dataGridView1.Rows[4].Cells[0].Value = true;
+            dataGridView1.Rows[5].Cells[0].Value = true;
+            dataGridView1.Rows[6].Cells[0].Value = true;
         }
 
         bool IsSorted(int[] a)
@@ -203,6 +205,35 @@ namespace lab12
             time = Environment.TickCount - t1;
         }
 
+        public void LinearSort(int[] array, out int comparisons, out int asignments, out int time)
+        {
+            int n = array.Length;
+            comparisons = 0;
+            asignments = 0;
+
+            int t1 = Environment.TickCount;
+
+            int[] B  = new int[n];
+            for (int i = 0; i < n; i++)
+            {
+                asignments++;
+                B[array[i]]++;
+            }
+
+            int pos = 0;
+            for (int i = 0; i < n; i++)
+            {
+                comparisons++;
+                for (int j = 0; j < B[i]; j++)
+                {
+                    asignments++;
+                    array[pos] = i;
+                    pos++;
+                }
+            }
+            time = Environment.TickCount - t1;
+        }
+
         private void button2_Click(object sender, EventArgs e)
         {
             Close();
@@ -321,6 +352,47 @@ namespace lab12
                 dataGridView1.Rows[4].Cells[3].Value = "";
                 dataGridView1.Rows[4].Cells[4].Value = "";
                 dataGridView1.Rows[4].Cells[5].Value = "";
+            }
+
+            if (Convert.ToBoolean(dataGridView1.Rows[5].Cells[0].Value))
+            {
+                int[] sortingArray = (int[])source.Clone();
+                int time = 0;
+                int asignments = 0;
+
+                LinearSort(sortingArray, out comparisons, out asignments, out time);
+
+                dataGridView1.Rows[5].Cells[2].Value = comparisons;
+                dataGridView1.Rows[5].Cells[3].Value = asignments;
+                dataGridView1.Rows[5].Cells[4].Value = time;
+                dataGridView1.Rows[5].Cells[5].Value = IsSorted(sortingArray) ? "Да" : "Нет";
+            }
+            else
+            {
+                dataGridView1.Rows[5].Cells[2].Value = "";
+                dataGridView1.Rows[5].Cells[3].Value = "";
+                dataGridView1.Rows[5].Cells[4].Value = "";
+                dataGridView1.Rows[5].Cells[5].Value = "";
+            }
+
+            if (Convert.ToBoolean(dataGridView1.Rows[6].Cells[0].Value))
+            {
+                int[] sortingArray = (int[])source.Clone();
+                int t1 = Environment.TickCount;
+                Array.Sort(sortingArray);
+                int time = Environment.TickCount - t1;
+
+                dataGridView1.Rows[6].Cells[2].Value = "-";
+                dataGridView1.Rows[6].Cells[3].Value = "-";
+                dataGridView1.Rows[6].Cells[4].Value = time;
+                dataGridView1.Rows[6].Cells[5].Value = IsSorted(sortingArray) ? "Да" : "Нет";
+            }
+            else
+            {
+                dataGridView1.Rows[6].Cells[2].Value = "";
+                dataGridView1.Rows[6].Cells[3].Value = "";
+                dataGridView1.Rows[6].Cells[4].Value = "";
+                dataGridView1.Rows[6].Cells[5].Value = "";
             }
         }
     }

@@ -125,7 +125,7 @@
             this.arraySize.Size = new System.Drawing.Size(171, 22);
             this.arraySize.TabIndex = 1;
             this.arraySize.Value = new decimal(new int[] {
-            1000,
+            1000000,
             0,
             0,
             0});
