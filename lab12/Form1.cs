@@ -17,7 +17,7 @@ namespace lab12
         public SortingForm()
         {
             InitializeComponent();
-            dataGridView1.RowCount = 7;
+            dataGridView1.RowCount = 8;
             dataGridView1.ColumnCount = 6;
             dataGridView1.Rows[0].Cells[1].Value = "Обмен";
             dataGridView1.Rows[1].Cells[1].Value = "Выбор";
@@ -26,11 +26,13 @@ namespace lab12
             dataGridView1.Rows[4].Cells[1].Value = "Быстрая";
             dataGridView1.Rows[5].Cells[1].Value = "Линейная";
             dataGridView1.Rows[6].Cells[1].Value = "Встроенная";
+            dataGridView1.Rows[7].Cells[1].Value = "Пирамидальная";
 
             dataGridView1.Rows[3].Cells[0].Value = true;
             dataGridView1.Rows[4].Cells[0].Value = true;
             dataGridView1.Rows[5].Cells[0].Value = true;
             dataGridView1.Rows[6].Cells[0].Value = true;
+            dataGridView1.Rows[7].Cells[0].Value = true;
         }
 
         bool IsSorted(int[] a)
@@ -234,6 +236,54 @@ namespace lab12
             time = Environment.TickCount - t1;
         }
 
+        private void HeapSort(int[] array, out int comparisons, out int swaps, out int time)
+        {
+            int n = array.Length;
+            comparisons = 0;
+            swaps = 0;
+
+            int t1 = Environment.TickCount;
+
+            for (int i = n / 2 - 1; i >= 0; i--)
+            {
+                HeapDown(array, i, n, ref comparisons, ref swaps);
+            }
+
+            for (int i = n - 1; i > 0; i--)
+            {
+                (array[0], array[i]) = (array[i], array[0]);
+                swaps++;
+
+                HeapDown(array, 0, i, ref comparisons, ref swaps);
+            }
+
+            time = Environment.TickCount - t1;
+        }
+
+        private void HeapDown(int[] arr, int k, int size, ref int comparisons, ref int swaps)
+        {
+            while (2 * k + 1 < size)
+            {
+                int j = 2 * k + 1;
+
+                if (j + 1 < size)
+                {
+                    comparisons++;
+                    if (arr[j] < arr[j + 1])
+                        j++;
+                }
+
+                comparisons++;
+                if (arr[k] >= arr[j])
+                    break;
+
+                (arr[k], arr[j]) = (arr[j], arr[k]);
+                swaps++;
+
+                k = j;
+            }
+        }
+
         private void button2_Click(object sender, EventArgs e)
         {
             Close();
@@ -393,6 +443,28 @@ namespace lab12
                 dataGridView1.Rows[6].Cells[3].Value = "";
                 dataGridView1.Rows[6].Cells[4].Value = "";
                 dataGridView1.Rows[6].Cells[5].Value = "";
+            }
+
+            if (Convert.ToBoolean(dataGridView1.Rows[7].Cells[0].Value))
+            {
+                int[] sortingArray = (int[])source.Clone();
+                comparisons = 0;
+                swaps = 0;
+                int time = 0;
+
+                HeapSort(sortingArray, out comparisons, out swaps, out time);
+
+                dataGridView1.Rows[7].Cells[2].Value = comparisons;
+                dataGridView1.Rows[7].Cells[3].Value = swaps;
+                dataGridView1.Rows[7].Cells[4].Value = time;
+                dataGridView1.Rows[7].Cells[5].Value = IsSorted(sortingArray) ? "Да" : "Нет";
+            }
+            else
+            {
+                dataGridView1.Rows[7].Cells[2].Value = "";
+                dataGridView1.Rows[7].Cells[3].Value = "";
+                dataGridView1.Rows[7].Cells[4].Value = "";
+                dataGridView1.Rows[7].Cells[5].Value = "";
             }
         }
     }
